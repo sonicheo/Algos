@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ColorFill</title>
+</head>
+
+<style>
+    .box{
+        width: 10px;
+        height: 10px;
+        border-style: solid;
+    }
+    .line{
+        display: flex;
+    }
+    #bottom{
+        display: flex;
+        margin-top: 50px;
+    }
+    #bottom div{
+        width: 100px;
+        height: 100px;
+        border-style: solid;
+    }
+    #blue{
+        background-color: blue;
+        margin-right: 15px;
+    }
+    #green{
+        background-color: green;
+        margin-right: 15px;
+    }
+    #red{
+        background-color: red;
+        margin-right: 15px;
+    }
+</style>
+
+<body>
+    <div id="middle">
+
+    </div>
+
+    <div id="bottom">
+        <div id="blue">
+
+        </div>
+        <div id="green">
+
+        </div>
+        <div id="red">
+
+        </div>
+    </div>
+
+</body>
+
+<script>
+
+    var pickedColor = 'blue';
+    var bottom = document.getElementById('bottom');
+
+
+    function changeColor(e){
+        if(e.shiftKey){
+            console.log("Shiftkey Pressed")
+
+            var current;
+            var visitNext = [];
+            //pickedColor is the value(global variable)
+
+            //Grid
+            var grid = document.getElementById('middle');
+            //nodeValue
+            var boxColor = this.style.backgroundColor;
+
+
+            if(boxColor == pickedColor){
+                return console.log("Same Color")
+            }
+
+
+            function converToArray(accessKey){
+                return JSON.parse(accessKey)
+            }
+
+           
+
+            //this.accessKey is the node
+            visitNext.push(converToArray(this.accessKey));
+
+            // console.log(this.accessKey.substring(0, this.accessKey.indexOf(',')))
+            // console.log(this.accessKey.substring(this.accessKey.indexOf(',') + 1)
+            var i = 0;
+            while(visitNext.length > 0){
+
+                current = visitNext[0];
+                visitNext.splice(0,1);
+
+                grid.children[current[0]].children[current[1]].style.backgroundColor = pickedColor;
+
+                if(current[1] > 0){
+                    if(
+                        grid.children[current[0]].children[current[1]-1].style.backgroundColor == boxColor &&
+                        grid.children[current[0]].children[current[1]-1].style.backgroundColor != pickedColor
+                    ){
+                        console.log("Left2")
+                        visitNext.push([current[0],current[1]-1])
+                    }
+                }
+
+                if(current[0] < grid.children.length-1){
+                    console.log("Bottom")
+                    if(
+                        grid.children[current[0]+1].children[current[1]].style.backgroundColor == boxColor &&
+                        grid.children[current[0]+1].children[current[1]].style.backgroundColor != pickedColor
+                    ){
+                        visitNext.push([current[0]+1,current[1]])
+                    }
+                }
+
+                if(current[1] < grid.children.length-1){
+                    console.log("Right");
+                    if(
+                        grid.children[current[0]].children[current[1]+1].style.backgroundColor == boxColor &&
+                        grid.children[current[0]].children[current[1]+1].style.backgroundColor != pickedColor
+                    ){
+                        visitNext.push([current[0],current[1]+1])
+                    }
+                }
+
+                if(current[0] > 0){
+                    console.log("Top")
+                    if(
+                        grid.children[current[0]-1].children[current[1]].style.backgroundColor == boxColor &&
+                        grid.children[current[0]-1].children[current[1]].style.backgroundColor != pickedColor
+                    ){
+                        visitNext.push([current[0]-1,current[1]])
+                    }
+                }
+            }
+            
+            
+        }
+        else{
+            this.style.backgroundColor = pickedColor;
+        }
+    }
+
+
+    function makeGrid(size){
+        var newLine, newBox;
+        var div = document.getElementById('middle');
+
+        for(var i = 0; i < size; i++){
+            newLine = document.createElement('div');
+            newLine.className = 'line';
+            div.appendChild(newLine);
+            
+            for(var j = 0; j < size; j++){
+                newBox = document.createElement('div');
+                newBox.className = 'box';
+                newBox.style.backgroundColor = 'blue'
+                newBox.onclick = changeColor;
+                newBox.accessKey = JSON.stringify([i,j]);
+                newLine.appendChild(newBox);
+            }
+        }
+    }
+
+    function changePickerColor(e){
+        if(e.shiftKey){
+            console.log("Shiftkey Pressed")
+        }
+        pickedColor = this.id;
+        console.log(pickedColor);
+    };
+
+    for(var i = 0; i < bottom.children.length; i++){
+        bottom.children[i].onclick = changePickerColor;
+    }
+
+    makeGrid(100);
+
+    console.log(bottom.children);
+    // console.log(document.getElementsByClassName('line')[0].childNodes[0].style.backgroundColor);
+
+
+
+
+</script>
+
+</html>
